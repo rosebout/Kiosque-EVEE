@@ -1,0 +1,988 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kiosque EVEE — Nature Action Québec</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,600;0,900;1,300&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+
+<style>
+
+/* ================================================================
+   COULEURS — modifiez les valeurs ici
+   Outil pour choisir une couleur : https://coolors.co
+   ================================================================
+
+   Chaque ligne correspond à une zone précise du site.
+   Remplacez le code #XXXXXX par la couleur de votre choix.
+*/
+
+:root {
+
+  /* Fond de la page (arrière-plan général) */
+  --fond-page:            #f4faf0;
+
+  /* Header en haut */
+  --fond-header:          #22b6b2;
+
+  /* Barre de navigation et pied de page */
+  --fond-nav:             #1a3a1a;
+
+  /* Couleur du texte sur la page */
+  --texte:                #1a3a1a;
+
+  /* Dos des fiches (quand on les retourne) */
+  --fond-dos-fiche:       #1a3a1a;
+
+
+  /* ------ Volet PRÉVENTION ------ */
+  --prevention:           #F5C842;   /* couleur de la bordure et du badge */
+  --prevention-pale:      #FFF5C2;   /* couleur de fond de la fiche */
+
+  /* ------ Volet DÉTECTION ------ */
+  --detection:            #8BAFD4;
+  --detection-pale:       #D6E8F7;
+
+  /* ------ Volet INTERVENTION ------ */
+  --intervention:         #F4A0A8;
+  --intervention-pale:    #FDDDE0;
+
+  /* ------ Volet SURVEILLANCE ------ */
+  --surveillance:         #8FC99A;
+  --surveillance-pale:    #D6F0DC;
+
+}
+
+
+/* ================================================================
+   MISE EN PAGE GÉNÉRALE
+   (ne pas modifier cette section)
+   ================================================================ */
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--fond-page);
+  color: var(--texte);
+  min-height: 100vh;
+}
+
+
+/* ================================================================
+   HEADER (en-tête du haut)
+   ================================================================ */
+
+header {
+  background: var(--fond-header);
+  color: white;
+  padding: 28px 40px 22px;
+  text-align: center;
+}
+
+.logo {
+  height: 80px;
+  width: auto;
+  margin-bottom: 14px;
+}
+
+.site-titre {
+  font-family: 'Fraunces', serif;
+  font-size: clamp(26px, 5vw, 46px);
+  font-weight: 900;
+  letter-spacing: -1px;
+  color: white;
+}
+
+.site-titre span {
+  color: #96c326;   /* couleur du mot EVEE dans le titre */
+}
+
+.site-soustitre {
+  font-size: 13px;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  opacity: 0.88;
+  margin-top: 5px;
+}
+
+.site-intro {
+  max-width: 580px;
+  margin: 12px auto 0;
+  font-size: 15px;
+  opacity: 0.92;
+  line-height: 1.7;
+}
+
+
+/* ================================================================
+   BARRE DE NAVIGATION (onglets)
+   ================================================================ */
+
+nav {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  background: var(--fond-nav);
+  padding: 0 20px;
+  border-bottom: 3px solid rgba(255,255,255,0.08);
+}
+
+nav button {
+  font-family: 'Fraunces', serif;
+  font-size: 15px;
+  font-weight: 600;
+  padding: 14px 26px;
+  border: none;
+  background: transparent;
+  color: rgba(255,255,255,0.45);
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+  margin-bottom: -3px;
+  transition: all 0.2s;
+}
+
+nav button:hover {
+  color: rgba(255,255,255,0.85);
+}
+
+nav button.actif {
+  color: white;
+  border-bottom-color: white;
+}
+
+
+/* ================================================================
+   SECTIONS VOLETS
+   ================================================================ */
+
+.volet {
+  display: none;
+  padding: 36px 20px 60px;
+  max-width: 1200px;
+  margin: 0 auto;
+  animation: apparition 0.3s ease;
+}
+
+.volet.actif {
+  display: block;
+}
+
+@keyframes apparition {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.volet-entete {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 28px;
+}
+
+.volet-icone {
+  width: 50px;
+  height: 50px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  flex-shrink: 0;
+}
+
+.volet-nom {
+  font-family: 'Fraunces', serif;
+  font-size: clamp(24px, 4vw, 38px);
+  font-weight: 900;
+}
+
+.volet-description {
+  font-size: 14px;
+  opacity: 0.6;
+  margin-top: 3px;
+}
+
+
+/* ================================================================
+   FICHES
+   ================================================================ */
+
+.grille {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+  gap: 18px;
+}
+
+.fiche {
+  perspective: 1000px;
+  height: 310px;
+  cursor: pointer;
+}
+
+.fiche-interieur {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform 0.5s ease;
+}
+
+.fiche.retournee .fiche-interieur {
+  transform: rotateY(180deg);
+}
+
+.fiche-recto,
+.fiche-verso {
+  position: absolute;
+  inset: 0;
+  border-radius: 14px;
+  padding: 22px;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 3px 20px rgba(0,0,0,0.09);
+  overflow: hidden;
+}
+
+/* Verso = dos de la fiche */
+.fiche-verso {
+  transform: rotateY(180deg);
+  background: var(--fond-dos-fiche);
+  color: white;
+}
+
+/* Couleurs des rectos selon le volet */
+.prevention  .fiche-recto { background: var(--prevention-pale);    border: 2px solid var(--prevention); }
+.detection   .fiche-recto { background: var(--detection-pale);     border: 2px solid var(--detection); }
+.intervention .fiche-recto { background: var(--intervention-pale); border: 2px solid var(--intervention); }
+.surveillance .fiche-recto { background: var(--surveillance-pale); border: 2px solid var(--surveillance); }
+
+/* Contenu des fiches */
+.fiche-etiquette {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  opacity: 0.45;
+  margin-bottom: 8px;
+}
+
+.fiche-titre {
+  font-family: 'Fraunces', serif;
+  font-size: 19px;
+  font-weight: 700;
+  line-height: 1.25;
+  margin-bottom: 10px;
+}
+
+.fiche-liste {
+  font-size: 13px;
+  line-height: 1.75;
+  opacity: 0.78;
+  flex: 1;
+}
+
+.fiche-liste li {
+  list-style: none;
+  padding-left: 14px;
+  position: relative;
+}
+
+.fiche-liste li::before {
+  content: '–';
+  position: absolute;
+  left: 0;
+  opacity: 0.5;
+}
+
+.fiche-indice {
+  font-size: 11px;
+  opacity: 0.38;
+  margin-top: 12px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+/* Verso de la fiche */
+.verso-label {
+  font-size: 10px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  opacity: 0.4;
+  margin-bottom: 10px;
+}
+
+.verso-tag {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 20px;
+  margin-bottom: 10px;
+  color: #1a3a1a;
+}
+
+.prevention  .verso-tag { background: var(--prevention); }
+.detection   .verso-tag { background: var(--detection); }
+.intervention .verso-tag { background: var(--intervention); }
+.surveillance .verso-tag { background: var(--surveillance); }
+
+.verso-nom {
+  font-family: 'Fraunces', serif;
+  font-size: 17px;
+  font-weight: 700;
+  margin-bottom: 8px;
+  line-height: 1.3;
+}
+
+.verso-detail {
+  font-size: 13px;
+  line-height: 1.65;
+  opacity: 0.8;
+  flex: 1;
+  overflow-y: auto;
+}
+
+.verso-retour {
+  font-size: 11px;
+  opacity: 0.35;
+  margin-top: 10px;
+  text-align: right;
+}
+
+
+/* ================================================================
+   PIED DE PAGE
+   ================================================================ */
+
+footer {
+  background: var(--fond-nav);
+  color: white;
+  padding: 28px 30px;
+  text-align: center;
+  border-top: 1px solid rgba(255,255,255,0.07);
+}
+
+.footer-texte {
+  font-size: 14px;
+  opacity: 0.55;
+}
+
+
+/* ================================================================
+   RESPONSIVE (téléphone)
+   ================================================================ */
+
+@media (max-width: 600px) {
+  nav button { padding: 11px 14px; font-size: 13px; }
+  .fiche { height: 280px; }
+  header { padding: 22px 20px 18px; }
+}
+
+</style>
+</head>
+<body>
+
+
+<!-- ================================================================
+     EN-TÊTE
+     Modifiez le titre, sous-titre et phrase d'intro ici
+     ================================================================ -->
+<header>
+
+  <!-- Logo — intégré directement, pas besoin d'un fichier image séparé -->
+  <img
+    class="logo"
+    src="data:image/png;base64,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"
+    alt="Nature Action Québec"
+  >
+
+  <!-- Titre principal — le mot entre <span> s'affiche en vert lime -->
+  <div class="site-titre">Kiosque <span>EVEE</span></div>
+
+  <!-- Sous-titre -->
+  <div class="site-soustitre">Nature Action Québec</div>
+
+  <!-- Phrase d'introduction -->
+  <p class="site-intro">
+    Espèces végétales exotiques envahissantes — explorez les 4 volets d'action
+    en cliquant sur les fiches pour découvrir les projets concrets.
+  </p>
+
+</header>
+
+
+<!-- ================================================================
+     ONGLETS DE NAVIGATION
+     Modifiez le texte des boutons entre > et <
+     Ne pas toucher aux mots dans onclick="..." et class="..."
+     ================================================================ -->
+<nav>
+  <button class="actif" onclick="afficherVolet('prevention')">🛡️ Prévention</button>
+  <button          onclick="afficherVolet('detection')">🔍 Détection</button>
+  <button          onclick="afficherVolet('intervention')">⚙️ Intervention</button>
+  <button          onclick="afficherVolet('surveillance')">👁️ Surveillance</button>
+</nav>
+
+
+<!-- ================================================================
+     VOLET 1 — PRÉVENTION  (fond jaune)
+
+     Pour chaque fiche :
+       - Modifiez le TITRE entre les balises : fiche-titre
+       - Modifiez les POINTS de liste entre les balises : li
+       - Modifiez le NOM DU PROJET entre : verso-nom
+       - Modifiez le DÉTAIL entre : verso-detail
+
+     Pour AJOUTER une fiche :
+       Copiez un bloc complet de FICHE jusqu'à FIN FICHE
+       et collez-le avant la balise /div de fin de grille.
+     ================================================================ -->
+
+<section class="volet actif" id="volet-prevention">
+
+  <!-- En-tête du volet — modifiez le nom et la description -->
+  <div class="volet-entete">
+    <div class="volet-icone" style="background: var(--prevention)">🛡️</div>
+    <div>
+      <div class="volet-nom">Prévention</div>
+      <div class="volet-description">Sensibiliser, réglementer et mobiliser pour éviter l'introduction et la propagation des EVEE</div>
+    </div>
+  </div>
+
+  <div class="grille">
+
+
+    <!-- FICHE P-1 -->
+    <div class="fiche prevention" onclick="this.classList.toggle('retournee')">
+      <div class="fiche-interieur">
+
+        <!-- RECTO (face avant) -->
+        <div class="fiche-recto">
+          <div class="fiche-etiquette">Prévention</div>
+          <div class="fiche-titre">Réglementation</div>
+          <ul class="fiche-liste">
+            <li>Accompagner les villes et municipalités dans le changement de leur réglementation</li>
+            <li>Projet règlement membre du comité EVEE (réseau environnement)</li>
+          </ul>
+          <div class="fiche-indice">↩ Cliquer pour voir le projet NAQ</div>
+        </div>
+
+        <!-- VERSO (face arrière — projet NAQ) -->
+        <div class="fiche-verso">
+          <div class="verso-label">Projet NAQ associé</div>
+          <div class="verso-tag">PLANÈTE NAQ 2000</div>
+          <div class="verso-nom">Planète NAQ — Volet Réglementation</div>
+          <div class="verso-detail">Accompagnement de municipalités québécoises dans la mise à jour de leurs règlements pour interdire ou restreindre les EVEE. Formation des élus et du personnel municipal.</div>
+          <div class="verso-retour">↩ Cliquer pour retourner</div>
+        </div>
+
+      </div>
+    </div>
+    <!-- FIN FICHE P-1 -->
+
+
+    <!-- FICHE P-2 -->
+    <div class="fiche prevention" onclick="this.classList.toggle('retournee')">
+      <div class="fiche-interieur">
+
+        <div class="fiche-recto">
+          <div class="fiche-etiquette">Prévention</div>
+          <div class="fiche-titre">Sensibilisation</div>
+          <ul class="fiche-liste">
+            <li>Panneaux, affiches réglementation</li>
+            <li>Webinaire EVEE</li>
+            <li>Publications réseaux sociaux</li>
+            <li>Formation du personnel municipal</li>
+          </ul>
+          <div class="fiche-indice">↩ Cliquer pour voir le projet NAQ</div>
+        </div>
+
+        <div class="fiche-verso">
+          <div class="verso-label">Projet NAQ associé</div>
+          <div class="verso-tag">PLANÈTE NAQ 2000</div>
+          <div class="verso-nom">Campagne de sensibilisation EVEE</div>
+          <div class="verso-detail">Création et diffusion de matériel pédagogique (affiches, capsules vidéo, fiches d'identification). Organisation de webinaires pour professionnels et grand public. Gestion des réseaux sociaux dédiés aux EVEE.</div>
+          <div class="verso-retour">↩ Cliquer pour retourner</div>
+        </div>
+
+      </div>
+    </div>
+    <!-- FIN FICHE P-2 -->
+
+
+    <!-- FICHE P-3 -->
+    <div class="fiche prevention" onclick="this.classList.toggle('retournee')">
+      <div class="fiche-interieur">
+
+        <div class="fiche-recto">
+          <div class="fiche-etiquette">Prévention</div>
+          <div class="fiche-titre">Regroupements</div>
+          <ul class="fiche-liste">
+            <li>Citoyens</li>
+            <li>Table de concertation locale sur les EVEE</li>
+            <li>RFGO</li>
+          </ul>
+          <div class="fiche-indice">↩ Cliquer pour voir le projet NAQ</div>
+        </div>
+
+        <div class="fiche-verso">
+          <div class="verso-label">Projet NAQ associé</div>
+          <div class="verso-tag">En développement</div>
+          <div class="verso-nom">Tables de concertation locales EVEE</div>
+          <div class="verso-detail">Appui à la création de regroupements citoyens et professionnels pour coordonner les actions locales. Liens avec le Réseau de la flore du Québec et autres partenaires environnementaux.</div>
+          <div class="verso-retour">↩ Cliquer pour retourner</div>
+        </div>
+
+      </div>
+    </div>
+    <!-- FIN FICHE P-3 -->
+
+
+  </div>
+</section>
+
+
+<!-- ================================================================
+     ████████████████████████████████████
+     VOLET 2 — DÉTECTION  (fond bleu)
+     ████████████████████████████████████
+     ================================================================ -->
+
+<section class="volet" id="volet-detection">
+
+  <div class="volet-entete">
+    <div class="volet-icone" style="background: var(--detection)">🔍</div>
+    <div>
+      <div class="volet-nom">Détection</div>
+      <div class="volet-description">Inventorier, cartographier et prioriser les espèces envahissantes sur le territoire</div>
+    </div>
+  </div>
+
+  <div class="grille">
+
+
+    <!-- FICHE D-1 -->
+    <div class="fiche detection" onclick="this.classList.toggle('retournee')">
+      <div class="fiche-interieur">
+
+        <div class="fiche-recto">
+          <div class="fiche-etiquette">Détection</div>
+          <div class="fiche-titre">Inventaire EVEE</div>
+          <ul class="fiche-liste">
+            <li>Type de site (humide, parcs, boisé...)</li>
+            <li>Caractérisation par drone</li>
+          </ul>
+          <div class="fiche-indice">↩ Cliquer pour voir le projet NAQ</div>
+        </div>
+
+        <div class="fiche-verso">
+          <div class="verso-label">Projet NAQ associé</div>
+          <div class="verso-tag">PLANÈTE NAQ 2000</div>
+          <div class="verso-nom">Inventaires terrain et cartographie drone</div>
+          <div class="verso-detail">Inventaires systématiques dans différents milieux (zones humides, parcs urbains, boisés). Utilisation de drones équipés de caméras multispectrales pour détecter et cartographier les colonies d'EVEE à grande échelle.</div>
+          <div class="verso-retour">↩ Cliquer pour retourner</div>
+        </div>
+
+      </div>
+    </div>
+    <!-- FIN FICHE D-1 -->
+
+
+    <!-- FICHE D-2 -->
+    <div class="fiche detection" onclick="this.classList.toggle('retournee')">
+      <div class="fiche-interieur">
+
+        <div class="fiche-recto">
+          <div class="fiche-etiquette">Détection</div>
+          <div class="fiche-titre">Étude d'avant-projet</div>
+          <ul class="fiche-liste">
+            <li>Caractérisation des colonies et des occurrences</li>
+            <li>Caractérisation des coulisses brunes, espèces à statut...</li>
+          </ul>
+          <div class="fiche-indice">↩ Cliquer pour voir le projet NAQ</div>
+        </div>
+
+        <div class="fiche-verso">
+          <div class="verso-label">Projet NAQ associé</div>
+          <div class="verso-tag">PLANÈTE NAQ / FFQ / RFGO</div>
+          <div class="verso-nom">Études d'avant-projet terrain</div>
+          <div class="verso-detail">Caractérisation détaillée avant intervention : superficie des colonies, densité, espèces à statut précaire, coulisses de déplacement. Ces études guident la planification et évitent les impacts sur la biodiversité indigène.</div>
+          <div class="verso-retour">↩ Cliquer pour retourner</div>
+        </div>
+
+      </div>
+    </div>
+    <!-- FIN FICHE D-2 -->
+
+
+    <!-- FICHE D-3 -->
+    <div class="fiche detection" onclick="this.classList.toggle('retournee')">
+      <div class="fiche-interieur">
+
+        <div class="fiche-recto">
+          <div class="fiche-etiquette">Détection</div>
+          <div class="fiche-titre">Clé décisionnelle</div>
+          <ul class="fiche-liste">
+            <li>Prioriser colonies à proximité des milieux sensibles</li>
+            <li>Déterminer méthodes d'intervention</li>
+            <li>Choix des colonies prioritaires</li>
+          </ul>
+          <div class="fiche-indice">↩ Cliquer pour voir le projet NAQ</div>
+        </div>
+
+        <div class="fiche-verso">
+          <div class="verso-label">Projet NAQ associé</div>
+          <div class="verso-tag">PLANÈTE NAQ 17135</div>
+          <div class="verso-nom">Outil de priorisation des interventions</div>
+          <div class="verso-detail">Clé décisionnelle pour prioriser les sites selon des critères écologiques (proximité de milieux humides, espèces à statut, connectivité). Guide les gestionnaires vers les colonies les plus urgentes.</div>
+          <div class="verso-retour">↩ Cliquer pour retourner</div>
+        </div>
+
+      </div>
+    </div>
+    <!-- FIN FICHE D-3 -->
+
+
+    <!-- FICHE D-4 -->
+    <div class="fiche detection" onclick="this.classList.toggle('retournee')">
+      <div class="fiche-interieur">
+
+        <div class="fiche-recto">
+          <div class="fiche-etiquette">Détection</div>
+          <div class="fiche-titre">Comité citoyens</div>
+          <ul class="fiche-liste">
+            <li>Former les citoyens à la détection précoce des EVEE</li>
+          </ul>
+          <div class="fiche-indice">↩ Cliquer pour voir le projet NAQ</div>
+        </div>
+
+        <div class="fiche-verso">
+          <div class="verso-label">Projet NAQ associé</div>
+          <div class="verso-tag">Comité EVEE citoyen</div>
+          <div class="verso-nom">Formation à la détection citoyenne</div>
+          <div class="verso-detail">Ateliers pour citoyens volontaires : reconnaître les principales EVEE de leur région. Intégration dans des plateformes de sciences citoyennes (iNaturalist) pour centraliser les signalements et alimenter les bases de données provinciales.</div>
+          <div class="verso-retour">↩ Cliquer pour retourner</div>
+        </div>
+
+      </div>
+    </div>
+    <!-- FIN FICHE D-4 -->
+
+
+  </div>
+</section>
+
+
+<!-- ================================================================
+     ████████████████████████████████████
+     VOLET 3 — INTERVENTION  (fond rose)
+     ████████████████████████████████████
+     ================================================================ -->
+
+<section class="volet" id="volet-intervention">
+
+  <div class="volet-entete">
+    <div class="volet-icone" style="background: var(--intervention)">⚙️</div>
+    <div>
+      <div class="volet-nom">Intervention</div>
+      <div class="volet-description">Contrôler et éliminer les EVEE en protégeant les habitats d'espèces à statut</div>
+    </div>
+  </div>
+
+  <div class="grille">
+
+
+    <!-- FICHE I-1 -->
+    <div class="fiche intervention" onclick="this.classList.toggle('retournee')">
+      <div class="fiche-interieur">
+
+        <div class="fiche-recto">
+          <div class="fiche-etiquette">Intervention</div>
+          <div class="fiche-titre">Habitat d'espèces fauniques à statut</div>
+          <ul class="fiche-liste">
+            <li>Rainette faux-grillon</li>
+            <li>Petit blongios</li>
+            <li>Tortue molle à épines</li>
+            <li>Tortue géographique</li>
+            <li>Coulisses brunes</li>
+            <li>Plover de l'est</li>
+            <li>Milieux des marais</li>
+          </ul>
+          <div class="fiche-indice">↩ Cliquer pour voir le projet NAQ</div>
+        </div>
+
+        <div class="fiche-verso">
+          <div class="verso-label">Projet NAQ associé</div>
+          <div class="verso-tag">PLANÈTE NAQ 2000 / PROJETS 11185</div>
+          <div class="verso-nom">Protection habitat espèces fauniques</div>
+          <div class="verso-detail">Interventions ciblées dans les habitats critiques d'espèces fauniques à statut précaire. Coordination avec le MELCCFP et MRN. Suivi post-intervention des populations pour évaluer la réponse des espèces cibles.</div>
+          <div class="verso-retour">↩ Cliquer pour retourner</div>
+        </div>
+
+      </div>
+    </div>
+    <!-- FIN FICHE I-1 -->
+
+
+    <!-- FICHE I-2 -->
+    <div class="fiche intervention" onclick="this.classList.toggle('retournee')">
+      <div class="fiche-interieur">
+
+        <div class="fiche-recto">
+          <div class="fiche-etiquette">Intervention</div>
+          <div class="fiche-titre">Habitat d'espèces floristiques à statut</div>
+          <ul class="fiche-liste">
+            <li>Noyer cendré</li>
+            <li>Érable noir</li>
+            <li>Matteucie fougère à l'autruche</li>
+            <li>Aster du Canada</li>
+            <li>Desmodium du Canada</li>
+            <li>Trille blanc</li>
+            <li>Uvulaire à grandes fleurs</li>
+          </ul>
+          <div class="fiche-indice">↩ Cliquer pour voir le projet NAQ</div>
+        </div>
+
+        <div class="fiche-verso">
+          <div class="verso-label">Projet NAQ associé</div>
+          <div class="verso-tag">PLANÈTE NAQ / FFQ / RFGO 17135</div>
+          <div class="verso-nom">Protection habitat floristique</div>
+          <div class="verso-detail">Contrôle des EVEE menaçant les populations de plantes à statut précaire. Travaux manuels et mécaniques adaptés. Restauration du couvert végétal indigène par transplantation et ensemencement post-intervention.</div>
+          <div class="verso-retour">↩ Cliquer pour retourner</div>
+        </div>
+
+      </div>
+    </div>
+    <!-- FIN FICHE I-2 -->
+
+
+    <!-- FICHE I-3 -->
+    <div class="fiche intervention" onclick="this.classList.toggle('retournee')">
+      <div class="fiche-interieur">
+
+        <div class="fiche-recto">
+          <div class="fiche-etiquette">Intervention</div>
+          <div class="fiche-titre">Méthodes d'intervention</div>
+          <ul class="fiche-liste">
+            <li>Herbacée : arrachage / spading</li>
+            <li>Pliage des tiges</li>
+            <li>Fauche</li>
+            <li>Bâchage</li>
+            <li>Arbre/arbuste : coupe, encapsulation</li>
+            <li>Arrachage des semis</li>
+          </ul>
+          <div class="fiche-indice">↩ Cliquer pour voir le projet NAQ</div>
+        </div>
+
+        <div class="fiche-verso">
+          <div class="verso-label">Projet NAQ associé</div>
+          <div class="verso-tag">NAQ2008 / PROJETS</div>
+          <div class="verso-nom">Méthodes mécaniques sans herbicide</div>
+          <div class="verso-detail">Application de méthodes mécaniques adaptées selon les espèces et les milieux. Pour les herbacées : arrachage, spading, pliage, fauche répétée, bâchage. Pour les ligneux : coupe à la base, encapsulation des souches, arrachage des semis.</div>
+          <div class="verso-retour">↩ Cliquer pour retourner</div>
+        </div>
+
+      </div>
+    </div>
+    <!-- FIN FICHE I-3 -->
+
+
+    <!-- FICHE I-4 -->
+    <div class="fiche intervention" onclick="this.classList.toggle('retournee')">
+      <div class="fiche-interieur">
+
+        <div class="fiche-recto">
+          <div class="fiche-etiquette">Intervention</div>
+          <div class="fiche-titre">Restauration des milieux naturels</div>
+          <ul class="fiche-liste">
+            <li>Plantation d'espèces indigènes</li>
+            <li>Ensemencement</li>
+            <li>Retrait bâches et matériels</li>
+          </ul>
+          <div class="fiche-indice">↩ Cliquer pour voir le projet NAQ</div>
+        </div>
+
+        <div class="fiche-verso">
+          <div class="verso-label">Projet NAQ associé</div>
+          <div class="verso-tag">NAQ2008 / PROJETS 2025-2026</div>
+          <div class="verso-nom">Journées de corvées d'arrachage</div>
+          <div class="verso-detail">Corvées communautaires pour restaurer les sites post-intervention. Plantation d'espèces indigènes, ensemencement de mélanges floraux natifs. Retrait des bâches après traitement. Suivi de la reprise sur plusieurs saisons.</div>
+          <div class="verso-retour">↩ Cliquer pour retourner</div>
+        </div>
+
+      </div>
+    </div>
+    <!-- FIN FICHE I-4 -->
+
+
+    <!-- FICHE I-5 -->
+    <div class="fiche intervention" onclick="this.classList.toggle('retournee')">
+      <div class="fiche-interieur">
+
+        <div class="fiche-recto">
+          <div class="fiche-etiquette">Intervention</div>
+          <div class="fiche-titre">Participation citoyenne</div>
+          <ul class="fiche-liste">
+            <li>Journées de corvées d'arrachage organisées</li>
+            <li>Mobilisation des bénévoles</li>
+          </ul>
+          <div class="fiche-indice">↩ Cliquer pour voir le projet NAQ</div>
+        </div>
+
+        <div class="fiche-verso">
+          <div class="verso-label">Projet NAQ associé</div>
+          <div class="verso-tag">PLANÈTE NAQ / Comité citoyen EVEE</div>
+          <div class="verso-nom">Corvées citoyennes EVEE</div>
+          <div class="verso-detail">Journées de bénévolat sur le terrain. Formation aux techniques d'arrachage sécuritaires. Sensibilisation in situ aux enjeux des EVEE. Ces événements créent des ambassadeurs du milieu naturel dans chaque communauté.</div>
+          <div class="verso-retour">↩ Cliquer pour retourner</div>
+        </div>
+
+      </div>
+    </div>
+    <!-- FIN FICHE I-5 -->
+
+
+  </div>
+</section>
+
+
+<!-- ================================================================
+     ████████████████████████████████████
+     VOLET 4 — SURVEILLANCE  (fond vert)
+     ████████████████████████████████████
+     ================================================================ -->
+
+<section class="volet" id="volet-surveillance">
+
+  <div class="volet-entete">
+    <div class="volet-icone" style="background: var(--surveillance)">👁️</div>
+    <div>
+      <div class="volet-nom">Surveillance</div>
+      <div class="volet-description">Suivre l'évolution des colonies et mesurer l'efficacité des interventions</div>
+    </div>
+  </div>
+
+  <div class="grille">
+
+
+    <!-- FICHE S-1 -->
+    <div class="fiche surveillance" onclick="this.classList.toggle('retournee')">
+      <div class="fiche-interieur">
+
+        <div class="fiche-recto">
+          <div class="fiche-etiquette">Surveillance</div>
+          <div class="fiche-titre">Suivi de colonies existantes</div>
+          <ul class="fiche-liste">
+            <li>Contrôler le taux de repousse 3 fois par année</li>
+            <li>Vérifier la reconstitution de l'espèce envahissante</li>
+            <li>Vérifier l'expansion de la colonie</li>
+            <li>Photographier aux mêmes points pour suivre l'évolution</li>
+          </ul>
+          <div class="fiche-indice">↩ Cliquer pour voir le projet NAQ</div>
+        </div>
+
+        <div class="fiche-verso">
+          <div class="verso-label">Projet NAQ associé</div>
+          <div class="verso-tag">PLANÈTE NAQ 2000 / PROJETS</div>
+          <div class="verso-nom">Protocole de suivi des colonies</div>
+          <div class="verso-detail">Protocoles standardisés : visites 3×/an (printemps, été, automne), photos géoréférencées, mesures de superficie et densité. Données versées dans un système centralisé pour suivre l'efficacité sur le long terme.</div>
+          <div class="verso-retour">↩ Cliquer pour retourner</div>
+        </div>
+
+      </div>
+    </div>
+    <!-- FIN FICHE S-1 -->
+
+
+    <!-- FICHE S-2 -->
+    <div class="fiche surveillance" onclick="this.classList.toggle('retournee')">
+      <div class="fiche-interieur">
+
+        <div class="fiche-recto">
+          <div class="fiche-etiquette">Surveillance</div>
+          <div class="fiche-titre">Suivi post-intervention</div>
+          <ul class="fiche-liste">
+            <li>Détecter les nouvelles dominances</li>
+            <li>Vérifier la reprise de la végétation indigène</li>
+          </ul>
+          <div class="fiche-indice">↩ Cliquer pour voir le projet NAQ</div>
+        </div>
+
+        <div class="fiche-verso">
+          <div class="verso-label">Projet NAQ associé</div>
+          <div class="verso-tag">PLANÈTE NAQ 2000 / SRL 12701</div>
+          <div class="verso-nom">Évaluation de l'efficacité post-intervention</div>
+          <div class="verso-detail">Suivi des sites traités sur 3 à 5 ans pour évaluer la reprise de végétation indigène et détecter les nouvelles espèces opportunistes. Résultats partagés avec les partenaires scientifiques.</div>
+          <div class="verso-retour">↩ Cliquer pour retourner</div>
+        </div>
+
+      </div>
+    </div>
+    <!-- FIN FICHE S-2 -->
+
+
+    <!-- FICHE S-3 -->
+    <div class="fiche surveillance" onclick="this.classList.toggle('retournee')">
+      <div class="fiche-interieur">
+
+        <div class="fiche-recto">
+          <div class="fiche-etiquette">Surveillance</div>
+          <div class="fiche-titre">Implication des utilisateurs du milieu</div>
+          <ul class="fiche-liste">
+            <li>Encourager la détection citoyenne</li>
+            <li>Formation d'un regroupement citoyen</li>
+          </ul>
+          <div class="fiche-indice">↩ Cliquer pour voir le projet NAQ</div>
+        </div>
+
+        <div class="fiche-verso">
+          <div class="verso-label">Projet NAQ associé</div>
+          <div class="verso-tag">PLANÈTE NAQ / CRE / Comité citoyen EVEE</div>
+          <div class="verso-nom">Réseau de surveillants citoyens</div>
+          <div class="verso-detail">Formation des utilisateurs réguliers des milieux naturels (randonneurs, pêcheurs, jardiniers) comme sentinelles. Création de groupes locaux. Intégration dans des outils de cartographie collaborative pour une veille territoriale continue.</div>
+          <div class="verso-retour">↩ Cliquer pour retourner</div>
+        </div>
+
+      </div>
+    </div>
+    <!-- FIN FICHE S-3 -->
+
+
+  </div>
+</section>
+
+
+<!-- ================================================================
+     PIED DE PAGE
+     Modifiez le texte ci-dessous
+     ================================================================ -->
+<footer>
+  <p class="footer-texte">Nature Action Québec — Kiosque EVEE</p>
+</footer>
+
+
+<script>
+// Gestion des onglets
+function afficherVolet(id) {
+  // Cacher tous les volets
+  document.querySelectorAll('.volet').forEach(function(v) {
+    v.classList.remove('actif');
+  });
+  // Désactiver tous les boutons
+  document.querySelectorAll('nav button').forEach(function(b) {
+    b.classList.remove('actif');
+  });
+  // Afficher le volet choisi
+  document.getElementById('volet-' + id).classList.add('actif');
+  // Activer le bon bouton
+  event.target.classList.add('actif');
+}
+</script>
+
+
+</body>
+</html>
